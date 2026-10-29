@@ -20,7 +20,7 @@ const facts = [
     <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
       <SectionHeading id="about-title" index="01" title="About me" />
 
-      <div v-reveal class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-16">
+      <div v-reveal class="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-16">
         <div class="max-w-prose space-y-5 text-base leading-relaxed text-muted sm:text-[1.0625rem]">
           <p v-for="(paragraph, index) in site.about" :key="index" :class="index === 0 ? 'text-fg/90' : ''">
             {{ paragraph }}

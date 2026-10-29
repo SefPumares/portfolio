@@ -23,8 +23,8 @@ const hasEmail = links.some((link) => link.id === 'email')
         }}
       </SectionHeading>
 
-      <ul v-if="links.length" v-reveal class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <li v-for="link in links" :key="link.id">
+      <ul v-if="links.length" v-reveal class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <li v-for="link in links" :key="link.id" class="min-w-0">
           <a
             :href="link.href"
             :target="link.external ? '_blank' : undefined"

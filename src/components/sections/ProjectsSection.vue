@@ -25,7 +25,7 @@ function openProject(project: Project, el: HTMLElement) {
         Work from my role at Xepto Computing Inc. and my academic capstone. Descriptions are kept to what can be shared publicly.
       </SectionHeading>
 
-      <div v-reveal class="grid gap-5 md:grid-cols-2">
+      <div v-reveal class="grid grid-cols-1 gap-5 md:grid-cols-2">
         <ProjectCard
           v-for="project in visibleProjects"
           :key="project.id"

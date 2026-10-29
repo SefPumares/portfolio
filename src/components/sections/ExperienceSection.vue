@@ -53,7 +53,7 @@ const kindLabel: Record<ExperienceEntry['kind'], string> = {
               <li
                 v-for="(role, index) in entry.roles"
                 :key="role.title"
-                class="grid gap-2 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6"
+                class="grid grid-cols-1 gap-2 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6"
                 :class="index > 0 ? 'border-t border-line pt-6' : ''"
               >
                 <p class="font-mono text-xs leading-6 text-subtle">{{ role.period }}</p>

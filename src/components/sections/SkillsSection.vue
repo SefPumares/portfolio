@@ -22,7 +22,7 @@ const icons: Record<SkillGroup['icon'], typeof Monitor> = {
         Technologies and practices I have used in my work and studies, grouped by area. They are not ranked.
       </SectionHeading>
 
-      <ul v-reveal class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ul v-reveal class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <li
           v-for="group in skillGroups"
           :key="group.id"

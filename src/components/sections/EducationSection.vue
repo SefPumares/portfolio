@@ -11,7 +11,7 @@ import { vReveal } from '@/directives/reveal'
     <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
       <SectionHeading id="education-title" index="05" title="Education & recognition" />
 
-      <div v-reveal class="grid gap-5 lg:grid-cols-2">
+      <div v-reveal class="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <article
           v-for="item in education"
           :key="item.institution"
