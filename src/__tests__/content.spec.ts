@@ -37,7 +37,7 @@ describe('project content', () => {
   it('never renders placeholder text', () => {
     for (const project of projects) {
       for (const text of renderedText(project)) {
-        expect(text, `${project.id}: "${text}"`).not.toMatch(/TODO|TBD|lorem|placeholder/i)
+        expect(text).not.toMatch(/TODO|TBD|lorem|placeholder/i)
       }
     }
   })
@@ -45,7 +45,7 @@ describe('project content', () => {
   it('only links to real https destinations', () => {
     for (const project of projects) {
       for (const link of project.links ?? []) {
-        expect(isUsableUrl(link.href), `${project.id}: ${link.href}`).toBe(true)
+        expect(isUsableUrl(link.href)).toBe(true)
       }
     }
   })

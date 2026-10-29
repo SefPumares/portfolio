@@ -4,11 +4,11 @@ import { mount } from '@vue/test-utils'
 // jsdom has no matchMedia / IntersectionObserver; components degrade gracefully without the latter.
 vi.stubGlobal(
   'matchMedia',
-  vi.fn().mockImplementation((query: string) => ({
+  vi.fn<(query: string) => Partial<MediaQueryList>>().mockImplementation((query) => ({
     matches: false,
     media: query,
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
+    addEventListener: vi.fn<() => void>(),
+    removeEventListener: vi.fn<() => void>(),
   })),
 )
 
@@ -33,7 +33,7 @@ describe('App', () => {
       .map((a) => a.attributes('href'))
     expect(navTargets).toEqual(['#about', '#skills', '#projects', '#experience', '#contact'])
     for (const target of navTargets) {
-      expect(wrapper.find(target!).exists(), `${target} section exists`).toBe(true)
+      expect(wrapper.find(target!).exists()).toBe(true)
     }
     wrapper.unmount()
   })
@@ -43,8 +43,8 @@ describe('App', () => {
     expect(wrapper.findAll('h1')).toHaveLength(1)
     for (const a of wrapper.findAll('a')) {
       const href = a.attributes('href') ?? ''
-      expect(href, a.text()).not.toBe('')
-      expect(href, a.text()).not.toBe('#')
+      expect(href).not.toBe('')
+      expect(href).not.toBe('#')
       expect(href).not.toMatch(/todo|example\.com|undefined|null/i)
     }
     wrapper.unmount()
