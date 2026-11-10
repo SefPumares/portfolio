@@ -3,16 +3,19 @@ import { Award, GraduationCap } from 'lucide-vue-next'
 import SectionHeading from '@/components/ui/SectionHeading.vue'
 import TagChip from '@/components/ui/TagChip.vue'
 import { achievements, education } from '@/data/education'
-import { vReveal } from '@/directives/reveal'
+import RevealOnScroll from '@/components/motion/RevealOnScroll.vue'
+
+withDefaults(defineProps<{ index?: string }>(), { index: '04' })
 </script>
 
 <template>
   <section id="education" aria-labelledby="education-title" class="border-t border-line py-20 sm:py-24">
     <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-      <SectionHeading id="education-title" index="05" title="Education & recognition" />
+      <SectionHeading id="education-title" :index="index" title="Education & recognition" />
 
-      <div v-reveal class="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <article
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <RevealOnScroll
+          as="article"
           v-for="item in education"
           :key="item.institution"
           class="rounded-card border border-line bg-surface p-5 sm:p-6"
@@ -30,9 +33,9 @@ import { vReveal } from '@/directives/reveal'
               </ul>
             </div>
           </div>
-        </article>
+        </RevealOnScroll>
 
-        <div class="rounded-card border border-line bg-surface p-5 sm:p-6">
+        <RevealOnScroll :delay="0.1" class="rounded-card border border-line bg-surface p-5 sm:p-6">
           <h3 class="flex items-center gap-2 font-semibold text-fg">
             <Award class="size-5 text-accent" aria-hidden="true" />
             Recognition
@@ -49,7 +52,7 @@ import { vReveal } from '@/directives/reveal'
               <p class="mt-1 font-mono text-xs text-subtle">{{ item.date }}</p>
             </li>
           </ul>
-        </div>
+        </RevealOnScroll>
       </div>
     </div>
   </section>

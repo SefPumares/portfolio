@@ -67,6 +67,11 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  build: {
+    // The lazily loaded 3D hero chunk (three.js, ~130 kB gzipped) is intentionally above the
+    // default 500 kB warning; it is downloaded only after first paint and only when WebGL runs.
+    chunkSizeWarningLimit: 600,
+  },
   preview: {
     headers: vercelHeaders(),
   },

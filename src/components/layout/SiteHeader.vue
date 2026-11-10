@@ -1,29 +1,35 @@
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
 import { Menu, X } from 'lucide-vue-next'
+import { AnimatePresence, motion, useReducedMotion } from 'motion-v'
 import ResumeButton from '@/components/ui/ResumeButton.vue'
-import { useActiveSection } from '@/composables/useActiveSection'
 import { site } from '@/data/site'
 
 const navItems = [
-  { id: 'about', label: 'About' },
-  { id: 'skills', label: 'Skills' },
-  { id: 'projects', label: 'Projects' },
-  { id: 'experience', label: 'Experience' },
-  { id: 'contact', label: 'Contact' },
+  { name: 'home', label: 'Home', path: '/' },
+  { name: 'projects', label: 'Projects', path: '/projects' },
+  { name: 'about', label: 'About', path: '/about' },
+  { name: 'contact', label: 'Contact', path: '/contact' },
 ] as const
 
-const active = useActiveSection(navItems.map((item) => item.id))
+const route = useRoute()
+const reduced = useReducedMotion()
+
+/** Projects stays highlighted on case-study pages (/projects/:id). */
+function isActive(path: string): boolean {
+  return path === '/' ? route.path === '/' : route.path === path || route.path.startsWith(`${path}/`)
+}
 
 const menuOpen = ref(false)
 const menuButton = ref<HTMLButtonElement | null>(null)
-const menuLinks = ref<HTMLAnchorElement[]>([])
+const menuLinks = ref<{ $el: HTMLAnchorElement }[]>([])
 
 async function toggleMenu() {
   menuOpen.value = !menuOpen.value
   if (menuOpen.value) {
     await nextTick()
-    menuLinks.value[0]?.focus()
+    menuLinks.value[0]?.$el.focus()
   }
 }
 
@@ -32,6 +38,12 @@ function closeMenu(returnFocus = false) {
   menuOpen.value = false
   if (returnFocus) menuButton.value?.focus()
 }
+
+// Navigating anywhere closes the mobile menu.
+watch(
+  () => route.fullPath,
+  () => closeMenu(),
+)
 
 function onKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape') closeMenu(true)
@@ -56,31 +68,39 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <header class="sticky top-0 z-40 border-b border-line/80 bg-bg/90 backdrop-blur-sm">
+  <header class="sticky top-0 z-40 border-b border-line/80 bg-bg/80 backdrop-blur-md">
     <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-      <a
-        href="#top"
+      <RouterLink
+        :to="{ name: 'home' }"
         class="group flex items-center gap-2.5 text-sm font-semibold tracking-tight text-fg"
-        :aria-label="`${site.name} — back to top`"
+        :aria-label="`${site.name} — home`"
       >
         <span
           aria-hidden="true"
-          class="grid size-8 place-items-center rounded-md border border-line-strong bg-surface font-mono text-xs text-accent transition-colors group-hover:border-accent/60"
+          class="grid size-8 place-items-center rounded-md border border-line-strong bg-surface font-mono text-xs text-accent transition-[border-color,transform] duration-300 group-hover:border-accent/60 motion-safe:group-hover:rotate-6"
           >YP</span
         >
         <span>{{ site.name }}</span>
-      </a>
+      </RouterLink>
 
       <nav aria-label="Primary" class="hidden md:block">
         <ul class="flex items-center gap-1">
-          <li v-for="item in navItems" :key="item.id">
-            <a
-              :href="`#${item.id}`"
-              class="rounded-md px-3 py-2 text-sm transition-colors"
-              :class="active === item.id ? 'text-fg' : 'text-muted hover:text-fg'"
-              :aria-current="active === item.id ? 'location' : undefined"
-              >{{ item.label }}</a
+          <li v-for="item in navItems" :key="item.name" class="relative">
+            <RouterLink
+              :to="item.path"
+              class="relative z-10 block rounded-md px-3 py-2 text-sm transition-colors"
+              :class="isActive(item.path) ? 'text-fg' : 'text-muted hover:text-fg'"
+              :aria-current="isActive(item.path) ? 'page' : undefined"
+              >{{ item.label }}</RouterLink
             >
+            <!-- Shared layoutId: the pill glides from the old active link to the new one. -->
+            <motion.span
+              v-if="isActive(item.path)"
+              layout-id="nav-active-pill"
+              aria-hidden="true"
+              class="absolute inset-0 rounded-md border border-line-strong bg-surface"
+              :transition="{ type: 'spring', stiffness: 380, damping: 32 }"
+            />
           </li>
         </ul>
       </nav>
@@ -103,26 +123,42 @@ onBeforeUnmount(() => {
       </button>
     </div>
 
-    <nav
-      v-show="menuOpen"
-      id="mobile-nav"
-      aria-label="Mobile"
-      class="border-t border-line bg-bg px-4 pt-2 pb-4 md:hidden"
-    >
-      <ul class="flex flex-col">
-        <li v-for="item in navItems" :key="item.id">
-          <a
-            ref="menuLinks"
-            :href="`#${item.id}`"
-            class="flex min-h-12 items-center border-b border-line text-base text-fg"
-            @click="closeMenu()"
-            >{{ item.label }}</a
-          >
-        </li>
-      </ul>
-      <div class="mt-4 empty:hidden">
-        <ResumeButton variant="primary" />
-      </div>
-    </nav>
+    <AnimatePresence>
+      <motion.nav
+        v-if="menuOpen"
+        id="mobile-nav"
+        aria-label="Mobile"
+        class="overflow-hidden border-t border-line bg-bg md:hidden"
+        :initial="reduced ? { opacity: 0 } : { height: 0, opacity: 0 }"
+        :animate="reduced ? { opacity: 1 } : { height: 'auto', opacity: 1 }"
+        :exit="reduced ? { opacity: 0 } : { height: 0, opacity: 0 }"
+        :transition="{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }"
+      >
+        <div class="px-4 pt-2 pb-4">
+          <ul class="flex flex-col">
+            <motion.li
+              v-for="(item, i) in navItems"
+              :key="item.name"
+              :initial="reduced ? false : { opacity: 0, x: -12 }"
+              :animate="{ opacity: 1, x: 0 }"
+              :transition="{ delay: 0.04 + i * 0.04, duration: 0.25 }"
+            >
+              <RouterLink
+                ref="menuLinks"
+                :to="item.path"
+                class="flex min-h-12 items-center justify-between border-b border-line text-base"
+                :class="isActive(item.path) ? 'text-accent' : 'text-fg'"
+                :aria-current="isActive(item.path) ? 'page' : undefined"
+                @click="closeMenu()"
+                >{{ item.label }}</RouterLink
+              >
+            </motion.li>
+          </ul>
+          <div class="mt-4 empty:hidden">
+            <ResumeButton variant="primary" />
+          </div>
+        </div>
+      </motion.nav>
+    </AnimatePresence>
   </header>
 </template>

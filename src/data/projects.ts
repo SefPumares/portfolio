@@ -121,3 +121,7 @@ export const projects: Project[] = [
 
 export const publishedProjects = (list: Project[] = projects): Project[] =>
   list.filter((project) => project.published)
+
+/** Looks up a published project by id (route param). Returns undefined for unknown or hidden ids. */
+export const findPublishedProject = (id: string, list: Project[] = projects): Project | undefined =>
+  list.find((project) => project.published && project.id === id)

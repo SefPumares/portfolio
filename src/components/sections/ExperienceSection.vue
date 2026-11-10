@@ -4,7 +4,12 @@ import SectionHeading from '@/components/ui/SectionHeading.vue'
 import TagChip from '@/components/ui/TagChip.vue'
 import { experience } from '@/data/experience'
 import type { ExperienceEntry } from '@/types/content'
-import { vReveal } from '@/directives/reveal'
+import { motion, useReducedMotion } from 'motion-v'
+import RevealOnScroll from '@/components/motion/RevealOnScroll.vue'
+
+withDefaults(defineProps<{ index?: string }>(), { index: '03' })
+
+const reduced = useReducedMotion()
 
 const kindLabel: Record<ExperienceEntry['kind'], string> = {
   employment: 'Employment',
@@ -15,12 +20,21 @@ const kindLabel: Record<ExperienceEntry['kind'], string> = {
 <template>
   <section id="experience" aria-labelledby="experience-title" class="border-t border-line bg-surface/40 py-20 sm:py-24">
     <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-      <SectionHeading id="experience-title" index="04" title="Experience">
+      <SectionHeading id="experience-title" :index="index" title="Experience">
         Software development and quality assurance first, followed by the creative and leadership roles that came before.
       </SectionHeading>
 
-      <ol class="relative space-y-6 border-l border-line-strong pl-6 sm:pl-8">
-        <li v-for="entry in experience" :key="entry.id" v-reveal class="relative">
+      <ol class="relative space-y-6 pl-6 sm:pl-8">
+        <!-- Timeline rail: draws downward as it scrolls into view. -->
+        <motion.span
+          aria-hidden="true"
+          class="absolute top-0 bottom-0 left-0 w-px origin-top bg-linear-to-b from-accent/70 via-line-strong to-line-strong"
+          :initial="reduced ? false : { scaleY: 0 }"
+          :while-in-view="{ scaleY: 1 }"
+          :in-view-options="{ once: true, margin: '0px 0px -20% 0px' }"
+          :transition="{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }"
+        />
+        <RevealOnScroll v-for="(entry, i) in experience" :key="entry.id" as="li" :delay="i * 0.05" class="relative">
           <span
             aria-hidden="true"
             class="absolute top-6 -left-[calc(1.5rem+5px)] size-2.5 rounded-full ring-4 ring-bg sm:-left-[calc(2rem+5px)]"
@@ -51,10 +65,10 @@ const kindLabel: Record<ExperienceEntry['kind'], string> = {
 
             <ol class="mt-6 space-y-6" :aria-label="`Roles at ${entry.organization}`">
               <li
-                v-for="(role, index) in entry.roles"
+                v-for="(role, roleIndex) in entry.roles"
                 :key="role.title"
                 class="grid grid-cols-1 gap-2 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6"
-                :class="index > 0 ? 'border-t border-line pt-6' : ''"
+                :class="roleIndex > 0 ? 'border-t border-line pt-6' : ''"
               >
                 <p class="font-mono text-xs leading-6 text-subtle">{{ role.period }}</p>
                 <div>
@@ -66,7 +80,7 @@ const kindLabel: Record<ExperienceEntry['kind'], string> = {
               </li>
             </ol>
           </article>
-        </li>
+        </RevealOnScroll>
       </ol>
     </div>
   </section>
