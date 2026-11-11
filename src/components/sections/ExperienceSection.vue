@@ -6,10 +6,12 @@ import { experience } from '@/data/experience'
 import type { ExperienceEntry } from '@/types/content'
 import { motion, useReducedMotion } from 'motion-v'
 import RevealOnScroll from '@/components/motion/RevealOnScroll.vue'
+import { canAnimateInView } from '@/lib/motion-support'
 
 withDefaults(defineProps<{ index?: string }>(), { index: '03' })
 
 const reduced = useReducedMotion()
+const drawRail = canAnimateInView()
 
 const kindLabel: Record<ExperienceEntry['kind'], string> = {
   employment: 'Employment',
@@ -29,8 +31,8 @@ const kindLabel: Record<ExperienceEntry['kind'], string> = {
         <motion.span
           aria-hidden="true"
           class="absolute top-0 bottom-0 left-0 w-px origin-top bg-linear-to-b from-accent/70 via-line-strong to-line-strong"
-          :initial="reduced ? false : { scaleY: 0 }"
-          :while-in-view="{ scaleY: 1 }"
+          :initial="reduced || !drawRail ? false : { scaleY: 0 }"
+          :while-in-view="drawRail ? { scaleY: 1 } : undefined"
           :in-view-options="{ once: true, margin: '0px 0px -20% 0px' }"
           :transition="{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }"
         />

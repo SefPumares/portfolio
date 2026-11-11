@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { motion, useReducedMotion } from 'motion-v'
+import { canAnimateInView } from '@/lib/motion-support'
 
 /**
  * Fades and lifts its content in the first time it scrolls into view.
@@ -20,13 +21,14 @@ withDefaults(
 )
 
 const reduced = useReducedMotion()
+const animate = canAnimateInView()
 </script>
 
 <template>
   <motion.div
     :as="as"
-    :initial="reduced ? false : { opacity: 0, y, filter: 'blur(6px)' }"
-    :while-in-view="{ opacity: 1, y: 0, filter: 'blur(0px)' }"
+    :initial="reduced || !animate ? false : { opacity: 0, y, filter: 'blur(6px)' }"
+    :while-in-view="animate ? { opacity: 1, y: 0, filter: 'blur(0px)' } : undefined"
     :in-view-options="{ once: true, margin: '0px 0px -8% 0px' }"
     :transition="{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }"
   >

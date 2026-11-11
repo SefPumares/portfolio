@@ -37,7 +37,6 @@ const nameWords = site.name.split(' ')
         tabindex="-1"
         data-page-heading
         class="mt-6 text-5xl font-semibold tracking-tight text-fg focus:outline-none sm:text-6xl lg:text-7xl"
-        :aria-label="site.name"
       >
         <span class="sr-only">{{ site.name }}</span>
         <span aria-hidden="true" class="flex flex-wrap gap-x-[0.25em]">
