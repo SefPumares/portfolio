@@ -68,7 +68,7 @@ onBeforeUnmount(() => {
       :class="ready ? 'opacity-100' : 'opacity-0'"
     ></div>
     <!-- Keeps the text readable over the brightest part of the field. -->
-    <div class="absolute inset-0 bg-linear-to-r from-bg via-bg/75 to-bg/10 lg:via-bg/55 lg:to-transparent"></div>
+    <div class="absolute inset-0 bg-linear-to-r from-bg/85 via-bg/45 to-transparent lg:from-bg lg:via-bg/30"></div>
     <div class="absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-bg to-transparent"></div>
   </div>
 </template>

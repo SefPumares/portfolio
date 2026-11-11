@@ -23,7 +23,6 @@ export const site: SiteConfig = {
     'I graduated with a BS in Information Technology from the Polytechnic University of the Philippines, Biñan Campus, in 2024. Before moving into IT, I worked as a graphic artist.',
   ],
 
-  // Assumed from your answer "yosef.pumares22@gmail.ccom" (".ccom" treated as a typo). Please confirm.
   email: 'yosef.pumares22@gmail.com',
 
   social: {

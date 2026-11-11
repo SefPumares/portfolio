@@ -1,6 +1,11 @@
 # Yosef Pumares — Portfolio
 
-Personal portfolio website. Single-page static site built with Vue 3, TypeScript, Vite and Tailwind CSS v4, ready for Vercel.
+Personal portfolio website. A multi-page static site (client-side routing) built with:
+- Vue 3, TypeScript, Vite and Tailwind CSS v4
+- Motion for animations
+- three.js for the interactive hero
+
+It's ready to deploy on Vercel.
 
 ## Edit these first
 
@@ -8,7 +13,7 @@ All site content lives in [`src/data/`](src/data). You should not need to touch 
 
 | Priority | File | What to check |
 | --- | --- | --- |
-| 1 | [`src/data/site.ts`](src/data/site.ts) | `email` (please confirm it's `yosef.pumares22@gmail.com`), `canonicalUrl` (set after deploying), `about`, `tagline` |
+| 1 | [`src/data/site.ts`](src/data/site.ts) | `canonicalUrl` (set after deploying), `about`, `tagline` |
 | 2 | [`src/data/projects.ts`](src/data/projects.ts) | `technologies` and `contribution` for each project — read each project's `editorNotes` |
 | 3 | `public/resume.pdf` | Add your resume (see below) |
 | 4 | [`src/data/experience.ts`](src/data/experience.ts) | Role details |
@@ -99,7 +104,27 @@ Cards and dialogs are generated automatically. Optional sections are skipped whe
 
 **Security headers:** [`vercel.json`](vercel.json) sets a strict Content-Security-Policy (self-hosted assets only, no inline scripts) plus `nosniff`, `Referrer-Policy`, `Permissions-Policy` and `X-Frame-Options`. `npm run preview` serves the same headers, so violations show up locally. If you ever add third-party scripts, analytics or fonts, you'll need to extend the CSP.
 
-No rewrites are configured, because the site is a single page without client-side routing.
+**Deep links:** `vercel.json` rewrites every path that doesn't match a real file to `index.html`. That lets client-side routes like `/projects/xepto-biblio` load directly and survive a reload. `vite preview` does the same locally.
+
+## Pages and animation
+
+| Route | Page |
+| --- | --- |
+| `/` | Hero with the 3D scene, selected work, skills overview, call to action |
+| `/projects` | All published projects |
+| `/projects/:id` | Case study for one project. Unknown or unpublished ids show the 404 page |
+| `/about` | About, skills, experience timeline, education |
+| `/contact` | Contact links |
+
+- **Motion** ([motion-v](https://motion.dev/docs/vue)) handles:
+  - page transitions (`AnimatePresence` in `App.vue`)
+  - scroll reveals (`RevealOnScroll`)
+  - magnetic buttons (`MagneticHover`)
+  - card tilt
+  - the sliding nav pill
+  - the card-to-case-study cover fly-in (`src/lib/page-transition.ts`)
+- **3D hero**: [`src/components/three/hero-scene.ts`](src/components/three/hero-scene.ts) is plain three.js with a custom point shader. It loads only after first paint, and only when WebGL is available, the visitor doesn't prefer reduced motion, and Save-Data is off. In every other case a CSS glow is shown instead.
+- **Reduced motion**: when the OS setting is on, page changes are a short fade, content appears without movement and the 3D scene is skipped.
 
 ## Project structure
 
@@ -107,14 +132,16 @@ No rewrites are configured, because the site is a single page without client-sid
 src/
   data/          ← all editable content (site, projects, experience, skills, education)
   types/         TypeScript interfaces for that content
+  router/        Routes, page titles, scroll restoration, 404 handling, idle prefetch
+  views/         One component per page (Home, Projects, ProjectDetail, About, Contact, NotFound)
   components/
-    layout/      SiteHeader (desktop nav + accessible mobile menu), SiteFooter
+    layout/      SiteHeader (nav with sliding active pill + animated mobile menu), SiteFooter
     sections/    Hero, About, Skills, Projects, Experience, Education, Contact
-    projects/    ProjectCard, ProjectCover (CSS-only cover), ProjectDialog (native <dialog>)
+    projects/    ProjectCard (links to its case study), ProjectCover (CSS-only cover)
+    motion/      RevealOnScroll, MagneticHover
+    three/       HeroScene (loader + fallback), hero-scene.ts (three.js scene)
     ui/          ButtonLink, TagChip, SectionHeading, ResumeButton, ContactIcon
-  composables/   useActiveSection (nav highlighting)
-  directives/    v-reveal (entrance fade; disabled for reduced motion)
-  lib/           link validation/mailto helpers, resume availability
+  lib/           link validation/mailto helpers, resume availability, page-transition coordination
   styles/        Tailwind v4 theme tokens and global styles
   __tests__/     Vitest unit tests
 e2e/             Playwright tests

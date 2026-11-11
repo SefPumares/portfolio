@@ -34,13 +34,15 @@ const page = computed(() =>
 )
 
 /**
- * After the old page has left: release the router's pending scroll, then move focus to the
- * new page's main heading so screen-reader users hear that the page changed.
+ * After the old page has left and the new page is in the DOM: release the router's pending
+ * scroll (restoring a saved position needs the new page's full height to exist, otherwise the
+ * browser clamps it), then move focus to the new page's main heading so screen-reader users
+ * hear that the page changed.
  */
 async function onExitComplete() {
-  notifyPageExited()
   await nextTick()
   requestAnimationFrame(() => {
+    notifyPageExited()
     const heading = document.querySelector<HTMLElement>('#main [data-page-heading]')
     heading?.focus({ preventScroll: true })
   })

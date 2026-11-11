@@ -2,7 +2,6 @@ import {
   AdditiveBlending,
   BufferAttribute,
   BufferGeometry,
-  Clock,
   Color,
   PerspectiveCamera,
   Plane,
@@ -60,7 +59,7 @@ const fragmentShader = /* glsl */ `
     float glow = smoothstep(0.5, 0.0, r);
     float lift = clamp((vHeight + 0.6) / 2.6, 0.0, 1.0);
     vec3 color = mix(uColor, uHighlight, lift);
-    gl_FragColor = vec4(color, glow * vAlpha * (0.35 + 0.65 * lift));
+    gl_FragColor = vec4(color, glow * vAlpha * (0.55 + 0.75 * lift));
   }
 `
 
@@ -109,8 +108,8 @@ export function createHeroScene(container: HTMLElement, onReady: () => void): ()
     uPointer: { value: new Vector2(999, 999) },
     uPointerStrength: { value: 0 },
     uPixelRatio: { value: pixelRatio },
-    uSize: { value: small ? 5 : 4.2 },
-    uColor: { value: new Color('#1c6f9a') },
+    uSize: { value: small ? 7 : 6 },
+    uColor: { value: new Color('#2b9bd6') },
     uHighlight: { value: new Color('#8fdaff') },
   }
   const material = new ShaderMaterial({
@@ -160,8 +159,8 @@ export function createHeroScene(container: HTMLElement, onReady: () => void): ()
     if (!w || !h) return
     renderer.setSize(w, h, false)
     camera.aspect = w / h
-    // Pull the camera back on portrait screens so the field still fills the width.
-    camera.position.z = cameraBase.z * Math.max(1, 1.2 / camera.aspect)
+    // Pull the camera back a little on portrait screens (capped, or the field fades into the distance).
+    camera.position.z = cameraBase.z * Math.min(1.35, Math.max(1, 1.2 / camera.aspect))
     camera.updateProjectionMatrix()
   }
   const resizeObserver = new ResizeObserver(resize)
@@ -171,7 +170,7 @@ export function createHeroScene(container: HTMLElement, onReady: () => void): ()
   // Run only while visible.
   let visible = true
   let frame = 0
-  const clock = new Clock()
+  let lastTime = 0 // rAF timestamp of the previous frame; 0 = just (re)started
   const intersection = new IntersectionObserver(([entry]) => {
     visible = !!entry?.isIntersecting
     schedule()
@@ -183,7 +182,7 @@ export function createHeroScene(container: HTMLElement, onReady: () => void): ()
   function schedule() {
     const shouldRun = visible && !document.hidden
     if (shouldRun && !frame) {
-      clock.getDelta() // discard the paused interval
+      lastTime = 0 // do not count the paused interval as elapsed time
       frame = requestAnimationFrame(tick)
     } else if (!shouldRun && frame) {
       cancelAnimationFrame(frame)
@@ -191,9 +190,10 @@ export function createHeroScene(container: HTMLElement, onReady: () => void): ()
     }
   }
 
-  function tick() {
+  function tick(now: number) {
     frame = requestAnimationFrame(tick)
-    const dt = Math.min(clock.getDelta(), 0.05)
+    const dt = lastTime ? Math.min((now - lastTime) / 1000, 0.05) : 0
+    lastTime = now
     uniforms.uTime.value += dt
 
     uniforms.uPointerStrength.value += ((pointerActive ? 1 : 0) - uniforms.uPointerStrength.value) * 0.05

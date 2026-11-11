@@ -62,6 +62,16 @@ export const routes: RouteRecordRaw[] = [
   },
 ]
 
+/** Loads every lazily imported page component (no-op if already loaded). */
+function prefetchViews(): void {
+  for (const route of routes) {
+    const component = route.component
+    if (typeof component === 'function' && !('setup' in component) && !('render' in component)) {
+      ;(component as () => Promise<unknown>)().catch(() => undefined)
+    }
+  }
+}
+
 /** Browser-tab title for a route. */
 export function titleFor(route: RouteLocationNormalized): string {
   const base = `${site.name} — ${site.title}`
@@ -96,6 +106,14 @@ export function createAppRouter(history: RouterHistory = createWebHistory(import
   router.afterEach((to) => {
     if (typeof document !== 'undefined') document.title = titleFor(to)
   })
+
+  // Once the first page is shown, quietly fetch the other pages' code while the browser is idle,
+  // so later navigations start instantly instead of waiting on the network mid-transition.
+  if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+    router.isReady().then(() => {
+      window.requestIdleCallback(() => prefetchViews(), { timeout: 4000 })
+    })
+  }
 
   return router
 }
