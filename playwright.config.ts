@@ -11,6 +11,10 @@ const baseURL = 'http://localhost:4173'
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
+  // Each worker is a full browser rendering an animated WebGL scene (in software when headless),
+  // so too many at once starve a busy laptop and cause timeouts unrelated to the site.
+  // Override with PW_WORKERS, e.g. PW_WORKERS=6 on a quiet or CI machine.
+  workers: Number(process.env.PW_WORKERS) || 2,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: [['list'], ['html', { open: 'never' }]],

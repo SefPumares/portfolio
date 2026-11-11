@@ -48,6 +48,7 @@ const headingText = (page: Page) =>
 
 test.describe('portfolio', () => {
   test('every page loads without console errors, failed requests or CSP violations', async ({ page }) => {
+    test.slow() // visits many pages in one test
     const problems = trackProblems(page)
     for (const path of [...pages.map((p) => p.path), ...projectIds.map((id) => `/projects/${id}`)]) {
       await page.goto(path)
@@ -80,6 +81,7 @@ test.describe('portfolio', () => {
   })
 
   test('has no horizontal overflow on any page', async ({ page }) => {
+    test.slow() // visits many pages in one test
     for (const path of [...pages.map((p) => p.path), '/projects/xepto-grader-tool']) {
       await page.goto(path)
       await expect(h1(page)).toBeVisible()
@@ -166,6 +168,7 @@ test.describe('portfolio', () => {
   })
 
   test('project cards open their case-study pages', async ({ page }) => {
+    test.slow() // visits many pages in one test
     await page.goto('/projects')
     const links = page.getByRole('link', { name: /^View case study/ })
     await expect(links).toHaveCount(projectIds.length)
@@ -304,6 +307,7 @@ test.describe('reduced motion', () => {
 })
 
 test('screenshots for visual review', async ({ page }, testInfo) => {
+  test.slow() // visits many pages in one test
   const name = testInfo.project.name
   await page.goto('/')
   await expect(page.locator('[data-hero-scene]')).toHaveAttribute('data-ready', 'true', { timeout: 10_000 })

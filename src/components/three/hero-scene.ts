@@ -154,6 +154,8 @@ export function createHeroScene(container: HTMLElement, onReady: () => void): ()
   window.addEventListener('pointermove', onPointerMove, { passive: true })
   document.documentElement.addEventListener('pointerleave', onPointerLeave)
 
+  let quality: 'full' | 'reduced' | 'still' = 'full'
+
   function resize() {
     const { clientWidth: w, clientHeight: h } = container
     if (!w || !h) return
@@ -162,6 +164,8 @@ export function createHeroScene(container: HTMLElement, onReady: () => void): ()
     // Pull the camera back a little on portrait screens (capped, or the field fades into the distance).
     camera.position.z = cameraBase.z * Math.min(1.35, Math.max(1, 1.2 / camera.aspect))
     camera.updateProjectionMatrix()
+    // Resizing clears the canvas; redraw the still image when animation has been stopped.
+    if (quality === 'still') renderer.render(scene, camera)
   }
   const resizeObserver = new ResizeObserver(resize)
   resizeObserver.observe(container)
@@ -179,8 +183,40 @@ export function createHeroScene(container: HTMLElement, onReady: () => void): ()
   const onVisibility = () => schedule()
   document.addEventListener('visibilitychange', onVisibility)
 
+  /*
+   * Adaptive quality. Devices without GPU acceleration render WebGL on the CPU, where a
+   * full-screen animated field can make the whole page sluggish. Every SAMPLE frames we check
+   * the average frame time: if it is too slow, first drop to 1x pixel ratio, then stop animating
+   * altogether (the last frame stays on screen as a still image).
+   */
+  const SAMPLE = 60
+  const SLOW_MS = 1000 / 30
+  // (quality is declared before resize(), which reads it)
+  let sampleFrames = 0
+  let sampleTime = 0
+
+  function checkPerformance(frameMs: number) {
+    sampleFrames++
+    sampleTime += frameMs
+    if (sampleFrames < SAMPLE) return
+    const average = sampleTime / sampleFrames
+    sampleFrames = 0
+    sampleTime = 0
+    if (average <= SLOW_MS) return
+    if (quality === 'full' && pixelRatio > 1) {
+      quality = 'reduced'
+      renderer.setPixelRatio(1)
+      uniforms.uPixelRatio.value = 1
+      resize()
+    } else {
+      quality = 'still'
+      cancelAnimationFrame(frame)
+      frame = 0
+    }
+  }
+
   function schedule() {
-    const shouldRun = visible && !document.hidden
+    const shouldRun = visible && !document.hidden && quality !== 'still'
     if (shouldRun && !frame) {
       lastTime = 0 // do not count the paused interval as elapsed time
       frame = requestAnimationFrame(tick)
@@ -192,6 +228,8 @@ export function createHeroScene(container: HTMLElement, onReady: () => void): ()
 
   function tick(now: number) {
     frame = requestAnimationFrame(tick)
+    if (lastTime) checkPerformance(now - lastTime)
+    if (!frame) return // stopped by the performance check
     const dt = lastTime ? Math.min((now - lastTime) / 1000, 0.05) : 0
     lastTime = now
     uniforms.uTime.value += dt
