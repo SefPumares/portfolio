@@ -162,6 +162,8 @@ test.describe('portfolio', () => {
     await page.keyboard.press('Enter')
     await expect(page.getByRole('button', { name: 'Close navigation menu' })).toHaveAttribute('aria-expanded', 'true')
     await expect(page.locator('#mobile-nav').getByRole('link', { name: 'Home' })).toBeFocused()
+    // The menu overlays the page: it must not push content down (which shifts the scroll position).
+    expect(await page.locator('body > #app header').first().evaluate((el) => el.getBoundingClientRect().height)).toBeLessThanOrEqual(80)
     await page.keyboard.press('Escape')
     await expect(page.locator('#mobile-nav')).toHaveCount(0)
     await expect(toggle).toBeFocused()

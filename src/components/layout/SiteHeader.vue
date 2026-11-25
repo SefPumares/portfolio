@@ -123,12 +123,17 @@ onBeforeUnmount(() => {
       </button>
     </div>
 
+    <!--
+      The menu overlays the page (absolute, below the header) instead of making the sticky header
+      taller: a taller header pushes the page down and the browser shifts the scroll position to
+      compensate, which then gets saved as the wrong back-button position.
+    -->
     <AnimatePresence>
       <motion.nav
         v-if="menuOpen"
         id="mobile-nav"
         aria-label="Mobile"
-        class="overflow-hidden border-t border-line bg-bg md:hidden"
+        class="absolute inset-x-0 top-full overflow-hidden border-y border-line bg-bg shadow-lg shadow-black/30 md:hidden"
         :initial="reduced ? { opacity: 0 } : { height: 0, opacity: 0 }"
         :animate="reduced ? { opacity: 1 } : { height: 'auto', opacity: 1 }"
         :exit="reduced ? { opacity: 0 } : { height: 0, opacity: 0 }"

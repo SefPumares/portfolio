@@ -93,9 +93,12 @@ export function createAppRouter(history: RouterHistory = createWebHistory(import
       }
       // Wait for the outgoing page to finish animating before moving the scroll position.
       await pageExited()
-      if (savedPosition) return savedPosition
-      if (to.hash) return { el: to.hash, top: 80 }
-      return { top: 0 }
+      // Jump, don't glide: the page is between transitions, and the site-wide CSS smooth scrolling
+      // would otherwise animate a back/forward restore, which can be cut short mid-way.
+      const behavior = 'instant' as const
+      if (savedPosition) return { ...savedPosition, behavior }
+      if (to.hash) return { el: to.hash, top: 80, behavior }
+      return { top: 0, behavior }
     },
   })
 
