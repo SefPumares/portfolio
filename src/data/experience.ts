@@ -20,7 +20,8 @@ export const experience: ExperienceEntry[] = [
         points: [
           'Maintain and support Xepto Biblio, an online book-ordering platform used by students at several Philippine universities.',
           'Helped develop the Xepto Grader Tool, an offline examination-checking solution, contributing to its proof of concept, implementation and process support, and testing.',
-          'Assisted with and contributed to Xepto Metabase, a data-focused web platform and dashboard initiative.',
+          'Created Moodle plugins: Xepto Health Checker, which checks course setup before the automated gradebook export, and Xepto Module Repository, which lets teachers add ready-made, validated activities to their courses.',
+          'Wrote MySQL queries and built Metabase dashboards for Xepto Metabase, a data-focused dashboard initiative.',
           'Investigate issues, test functionality, and maintain applications with the development team.',
         ],
       },

@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
+import { publishedProjects } from '@/data/projects'
 
 // jsdom has no matchMedia / IntersectionObserver; components degrade gracefully without them.
 vi.stubGlobal(
@@ -72,9 +73,11 @@ describe('App', () => {
   it('links every project card to its case-study page', async () => {
     const { wrapper } = await mountApp('/projects')
     const hrefs = wrapper.findAll('a').map((a) => a.attributes('href'))
-    for (const id of ['xepto-grader-tool', 'xepto-biblio', 'xepto-metabase', 'moodle-xlms', 'ms17-reclaimed-valor']) {
+    for (const { id } of publishedProjects()) {
       expect(hrefs).toContain(`/projects/${id}`)
     }
+    expect(hrefs).toContain('/projects/xepto-health-checker')
+    expect(hrefs).not.toContain('/projects/moodle-xlms')
     wrapper.unmount()
   })
 

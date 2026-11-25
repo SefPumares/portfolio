@@ -7,7 +7,14 @@ const pages = [
   { path: '/contact', heading: 'Get in touch', nav: 'Contact' },
 ] as const
 
-const projectIds = ['xepto-grader-tool', 'xepto-biblio', 'xepto-metabase', 'moodle-xlms', 'ms17-reclaimed-valor']
+const projectIds = [
+  'xepto-grader-tool',
+  'xepto-health-checker',
+  'xepto-module-repository',
+  'xepto-biblio',
+  'xepto-metabase',
+  'ms17-reclaimed-valor',
+]
 
 /** Collects console errors/warnings, page errors (incl. CSP violations) and failed requests. */
 function trackProblems(page: Page) {
@@ -190,11 +197,11 @@ test.describe('portfolio', () => {
     await expect(page).toHaveTitle('Xepto Grader Tool · Yosef Pumares')
     const main = page.locator('#main')
     await expect(main).toContainText('reported observation, not a controlled benchmark')
-    await expect(main).toContainText('not a statement about which devices the tool supports')
+    await expect(main).toContainText('Capacitor')
 
     await page.getByRole('navigation', { name: 'More projects' }).getByRole('link', { name: /Next project/ }).click()
-    await expect(page).toHaveURL('/projects/xepto-biblio')
-    await expect(h1(page)).toHaveText('Xepto Biblio')
+    await expect(page).toHaveURL('/projects/xepto-health-checker')
+    await expect(h1(page)).toHaveText('Xepto Health Checker')
 
     await page.getByRole('link', { name: 'All projects' }).click()
     await expect(page).toHaveURL('/projects')

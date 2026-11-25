@@ -6,7 +6,7 @@ export const skillGroups: SkillGroup[] = [
     id: 'frontend',
     title: 'Frontend',
     icon: 'frontend',
-    items: ['JavaScript', 'TypeScript', 'Vue.js', 'Ionic', 'HTML5', 'CSS3'],
+    items: ['JavaScript', 'TypeScript', 'Vue.js', 'Ionic', 'Capacitor', 'HTML5', 'CSS3'],
   },
   {
     id: 'backend',
@@ -37,6 +37,6 @@ export const skillGroups: SkillGroup[] = [
     id: 'tools',
     title: 'Tools & environments',
     icon: 'tools',
-    items: ['Git', 'GitHub', 'Linux', 'Server environments', 'Moodle / XLMS'],
+    items: ['Git', 'GitHub', 'Linux', 'Server environments', 'Moodle / XLMS plugin development', 'Unity'],
   },
 ]

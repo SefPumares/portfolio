@@ -21,7 +21,7 @@ export const projects: Project[] = [
     problem:
       'Schools in areas with limited internet connectivity need a way to check paper-based examinations without depending on an online service.',
     solution:
-      'The tool reads answer sheets through Optical Mark Recognition and checks them offline. The project included work associated with Bataan.',
+      'A Vue.js and TypeScript app captures answer sheets with the device camera (through Capacitor), and Python handles the Optical Mark Recognition, so exams are checked offline. The project included work associated with Bataan.',
     contribution: [
       'Member of the development team behind the tool.',
       'Contributed to the proof of concept, implementation and process support, and testing.',
@@ -32,16 +32,52 @@ export const projects: Project[] = [
         detail:
           'A 50-item exam-checking run was reported to drop from about 59 seconds to about 30 seconds. This is a reported observation, not a controlled benchmark.',
       },
-      {
-        label: 'Device testing',
-        detail:
-          '14 devices were tested — phones, laptops, XDCs and a MacBook. Three worked successfully in that test setup. This is a compatibility finding for the observed environment, not a statement about which devices the tool supports.',
-      },
     ],
+    technologies: ['Vue.js', 'TypeScript', 'Capacitor', 'Python'],
     recognition: 'Team recognition, December 2024',
     editorNotes: [
-      'Confirm the technologies used before adding `technologies`.',
-      'Confirm whether you personally ran the 14-device test, then mention it in `contribution`.',
+      'Confirm the source of the 59s → 30s speed-up figure; remove it if you cannot back it up in an interview.',
+      'A "14 devices tested" highlight was removed in v2.0.0 because it could not be confirmed.',
+    ],
+  },
+  {
+    id: 'xepto-health-checker',
+    title: 'Xepto Health Checker',
+    category: 'Moodle Plugin · Educational Technology',
+    context: 'professional',
+    published: true,
+    cover: { monogram: 'HC', pattern: 'rings' },
+    summary:
+      'A Moodle plugin that checks a course is set up correctly and free of errors before its automated gradebook is exported.',
+    problem:
+      'A misconfigured course only shows its mistakes when the automated gradebook is exported, when they are harder and slower to fix.',
+    solution:
+      'The plugin checks the course setup ahead of time and flags problems, so they can be fixed before the gradebook export runs.',
+    contribution: ['Created the plugin.'],
+    technologies: ['Moodle', 'PHP'],
+    editorNotes: [
+      'Add examples of what it checks (non-confidential) and any team or reviewer context.',
+      'Add other confirmed technologies (e.g. JavaScript, SQL) if used.',
+    ],
+  },
+  {
+    id: 'xepto-module-repository',
+    title: 'Xepto Module Repository',
+    category: 'Moodle Plugin · Educational Technology',
+    context: 'professional',
+    published: true,
+    cover: { monogram: 'MR', pattern: 'dots' },
+    summary:
+      'A Moodle plugin, similar to an LTI external tool, where teachers pick ready-made, validated activities aligned with their budget of work and add them to their course.',
+    problem:
+      'Building every activity from scratch takes teachers a lot of time, especially those who are less comfortable with technology.',
+    solution:
+      'A repository of pre-built, validated activities: teachers choose the ones that match their budget of work and add them to their course, instead of creating each one themselves.',
+    contribution: ['Created the plugin.'],
+    technologies: ['Moodle', 'PHP'],
+    editorNotes: [
+      'Add other confirmed technologies (e.g. JavaScript, SQL) if used.',
+      'Add adoption or usage numbers only if you can back them up.',
     ],
   },
   {
@@ -76,30 +112,11 @@ export const projects: Project[] = [
       'A data-focused web platform and dashboard initiative that uses SQL queries and Metabase to present information through dashboards.',
     solution:
       'SQL queries feed Metabase dashboards, so data can be reviewed through reports and dashboards.',
-    contribution: ['Assisted with and contributed to the initiative.'],
-    technologies: ['Metabase', 'SQL'],
-    editorNotes: [
-      'Add your exact responsibilities (e.g. writing queries, building dashboards).',
-      'Confirm the database engine (e.g. MySQL) before adding it to `technologies`.',
+    contribution: [
+      'Wrote MySQL queries for reports, using AI tools to help draft and refine them.',
+      'Built dashboards in Metabase to present the data.',
     ],
-  },
-  {
-    id: 'moodle-xlms',
-    title: 'Moodle / XLMS Work',
-    category: 'Learning Management Systems · Web Development',
-    context: 'professional',
-    published: true,
-    cover: { monogram: 'LMS', pattern: 'dots' },
-    summary:
-      'Professional development and support work in Moodle / XLMS learning management environments.',
-    solution:
-      'Working within Moodle / XLMS environments on LMS-related development and application support.',
-    technologies: ['Moodle / XLMS'],
-    editorNotes: [
-      'Replace with a specific LMS project when you are ready to feature one.',
-      'Do not list proposed features (AI recommendations, study-plan builder, flashcards, quizzes) unless they are implemented.',
-      'Add your contribution and confirmed technologies (e.g. PHP) for that project.',
-    ],
+    technologies: ['Metabase', 'MySQL', 'SQL'],
   },
   {
     id: 'ms17-reclaimed-valor',
@@ -110,12 +127,16 @@ export const projects: Project[] = [
     cover: { monogram: 'VR', pattern: 'rings' },
     summary:
       '“MS 17 Reclaimed Valor: A Virtual Reality Experience of the Marawi Siege” — my academic capstone project at PUP Biñan Campus.',
-    solution: 'A virtual reality experience of the Marawi Siege, developed as a capstone project.',
-    recognition: 'Best in Capstone, 2024',
-    editorNotes: [
-      'Add the technical stack and your responsibilities once confirmed.',
-      'Add team context if it was a group project.',
+    solution:
+      'A virtual reality experience of the Marawi Siege, built in Unity with C# by a team of six as a capstone project.',
+    contribution: [
+      'One of a six-person team.',
+      'Created terrains and landscapes for the VR environment.',
+      'Modeled characters.',
+      'Recorded voiceovers.',
     ],
+    technologies: ['Unity', 'C#'],
+    recognition: 'Best in Capstone, 2024',
   },
 ]
 

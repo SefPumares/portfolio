@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.1.0 — 2026-11-25
+
+### Added
+- Two Moodle plugin case studies: Xepto Health Checker and Xepto Module Repository. They replace the generic "Moodle / XLMS Work" card.
+- Confirmed technologies and contributions:
+  - Grader Tool: Vue.js, TypeScript, Capacitor, Python
+  - Metabase: MySQL queries and dashboards
+  - MS 17 Reclaimed Valor: Unity, C#, team of six, role (terrains, character modelling, voiceovers)
+- Skills: Capacitor, Unity and Moodle plugin development.
+
+### Removed
+- The unconfirmed "14 devices tested" highlight on the Grader Tool.
+
+### Fixed
+- Back/forward now restores the scroll position instantly. Before, the CSS smooth scrolling animated it, and the animation could stop part-way.
+- The mobile menu now overlays the page instead of pushing it down. This also fixes the back-button position on phones, which was off by the menu's height.
+
 ## 2.0.0 — 2026-11-11
 
 Multi-page redesign with Motion animations and an interactive 3D hero.
