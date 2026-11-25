@@ -113,6 +113,35 @@
     24px 24px;
 }
 
+/*
+ * Hero portrait. The cutout gets a thin cyan rim (drop-shadows follow the transparent edges),
+ * so the black shirt reads against the dark page, and fades out at the bottom into the field.
+ */
+.portrait-cutout {
+  /* Only a tight rim: a mask clips everything outside the image box, so a wide glow here would
+     show the box's edges. The soft haze comes from .portrait-glow behind it instead. */
+  filter: drop-shadow(0 0 1px rgb(143 218 255 / 0.6));
+}
+/* The bottom fade goes on the element that ends the figure: the cropped frame on small screens,
+   the image itself on wide screens (where the whole waist-up figure is shown). */
+@media (max-width: 1023.98px) {
+  .portrait-frame {
+    mask-image: linear-gradient(to bottom, #000 70%, transparent 98%);
+  }
+}
+@media (min-width: 1024px) {
+  .portrait-cutout {
+    mask-image: linear-gradient(to bottom, #000 70%, transparent 98%);
+  }
+}
+
+/* Light behind the figure; it drifts toward the pointer (see HeroPortrait.vue). */
+.portrait-glow {
+  inset: 8% -18% 12%;
+  background: radial-gradient(closest-side, rgb(92 200 255 / 0.32), rgb(92 200 255 / 0.1) 55%, transparent);
+  filter: blur(24px);
+}
+
 /* Typographic project-cover patterns (no images). */
 .cover-grid {
   background-image:

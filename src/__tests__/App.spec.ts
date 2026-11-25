@@ -100,6 +100,19 @@ describe('App', () => {
     wrapper.unmount()
   })
 
+  it('shows the portrait in the home hero with responsive sources and fixed dimensions', async () => {
+    const { wrapper } = await mountApp('/')
+    const img = wrapper.find('[data-hero-figure] img')
+    expect(img.exists()).toBe(true)
+    expect(img.attributes('alt')).toBe('Yosef Pumares')
+    expect(img.attributes('width')).toBe('500')
+    expect(img.attributes('height')).toBe('822')
+    expect(img.attributes('srcset')?.split(',')).toHaveLength(2)
+    // It is not part of the page heading's accessible name.
+    expect(wrapper.find('h1 img').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
   it('opens external contact links safely in a new tab', async () => {
     const { wrapper } = await mountApp('/contact')
     const external = wrapper.findAll('a[target="_blank"]')

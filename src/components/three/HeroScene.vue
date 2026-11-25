@@ -33,9 +33,15 @@ function shouldRender(): boolean {
 async function start(container: HTMLDivElement) {
   const { createHeroScene } = await import('./hero-scene')
   if (cancelled) return
-  cleanup = createHeroScene(container, () => {
-    ready.value = true
-  })
+  // The portrait lives in the same hero section (HeroPortrait.vue).
+  const figure = container.closest('section')?.querySelector<HTMLElement>('[data-hero-figure]') ?? null
+  cleanup = createHeroScene(
+    container,
+    () => {
+      ready.value = true
+    },
+    figure,
+  )
 }
 
 onMounted(() => {

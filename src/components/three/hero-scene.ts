@@ -25,6 +25,8 @@ const vertexShader = /* glsl */ `
   uniform float uPointerStrength;
   uniform float uPixelRatio;
   uniform float uSize;
+  uniform vec2 uFigure;
+  uniform float uFigureStrength;
   attribute float aRandom;
   varying float vAlpha;
   varying float vHeight;
@@ -37,8 +39,12 @@ const vertexShader = /* glsl */ `
         sin((p.x + p.z) * 0.14 + uTime * 0.3) * 0.35;
     float d = distance(p.xz, uPointer);
     float ripple = exp(-d * d * 0.035) * (1.4 + 0.35 * sin(d * 1.3 - uTime * 3.2)) * uPointerStrength;
-    p.y += wave + ripple;
-    vHeight = p.y;
+    // Slow rings flowing out from where the portrait stands, and a brighter aura around it.
+    float fd = distance(p.xz, uFigure);
+    float aura = exp(-fd * fd * 0.02) * uFigureStrength;
+    float rings = aura * sin(fd * 1.6 - uTime * 2.0) * 0.35;
+    p.y += wave + ripple + rings;
+    vHeight = p.y + aura * 0.8;
 
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
     gl_Position = projectionMatrix * mv;
@@ -65,9 +71,15 @@ const fragmentShader = /* glsl */ `
 
 /**
  * Mounts the scene into `container`. Calls `onReady` once the first frame is drawn.
+ * `figure`, if given, is the hero portrait: the field ripples around the point under it
+ * (wide layouts only, where the portrait stands inside the field).
  * Returns a cleanup function that stops rendering and frees every GPU resource.
  */
-export function createHeroScene(container: HTMLElement, onReady: () => void): () => void {
+export function createHeroScene(
+  container: HTMLElement,
+  onReady: () => void,
+  figure: HTMLElement | null = null,
+): () => void {
   const small = window.innerWidth < 768
   const renderer = new WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'low-power' })
   const pixelRatio = Math.min(window.devicePixelRatio || 1, 2)
@@ -109,6 +121,8 @@ export function createHeroScene(container: HTMLElement, onReady: () => void): ()
     uPointerStrength: { value: 0 },
     uPixelRatio: { value: pixelRatio },
     uSize: { value: small ? 7 : 6 },
+    uFigure: { value: new Vector2(999, 999) },
+    uFigureStrength: { value: 0 },
     uColor: { value: new Color('#2b9bd6') },
     uHighlight: { value: new Color('#8fdaff') },
   }
@@ -156,6 +170,24 @@ export function createHeroScene(container: HTMLElement, onReady: () => void): ()
 
   let quality: 'full' | 'reduced' | 'still' = 'full'
 
+  // Ground-plane point under the portrait (near its lower body), or none on narrow layouts.
+  const FIGURE_MIN_WIDTH = 1024
+  let figureActive = false
+  function updateFigure() {
+    figureActive = false
+    if (!figure || container.clientWidth < FIGURE_MIN_WIDTH) return
+    const c = container.getBoundingClientRect()
+    const f = figure.getBoundingClientRect()
+    if (!f.width || !c.width) return
+    const fx = ((f.left + f.width / 2 - c.left) / c.width) * 2 - 1
+    const fy = -((f.top + f.height * 0.88 - c.top) / c.height) * 2 + 1
+    raycaster.setFromCamera(new Vector2(fx, fy), camera)
+    if (raycaster.ray.intersectPlane(plane, hit)) {
+      uniforms.uFigure.value.set(hit.x, hit.z)
+      figureActive = true
+    }
+  }
+
   function resize() {
     const { clientWidth: w, clientHeight: h } = container
     if (!w || !h) return
@@ -164,12 +196,18 @@ export function createHeroScene(container: HTMLElement, onReady: () => void): ()
     // Pull the camera back a little on portrait screens (capped, or the field fades into the distance).
     camera.position.z = cameraBase.z * Math.min(1.35, Math.max(1, 1.2 / camera.aspect))
     camera.updateProjectionMatrix()
+    camera.lookAt(lookTarget)
+    camera.updateMatrixWorld()
+    updateFigure()
     // Resizing clears the canvas; redraw the still image when animation has been stopped.
     if (quality === 'still') renderer.render(scene, camera)
   }
   const resizeObserver = new ResizeObserver(resize)
   resizeObserver.observe(container)
+  if (figure) resizeObserver.observe(figure)
   resize()
+  // The portrait rises into place with an entrance animation; measure again once it has settled.
+  const settleTimer = window.setTimeout(updateFigure, 1500)
 
   // Run only while visible.
   let visible = true
@@ -236,6 +274,7 @@ export function createHeroScene(container: HTMLElement, onReady: () => void): ()
 
     uniforms.uPointerStrength.value += ((pointerActive ? 1 : 0) - uniforms.uPointerStrength.value) * 0.05
     if (pointerActive) uniforms.uPointer.value.lerp(pointerTarget, 0.08)
+    uniforms.uFigureStrength.value += ((figureActive ? 1 : 0) - uniforms.uFigureStrength.value) * 0.03
 
     // Gentle camera tilt toward the pointer plus drift with scroll.
     const scrollShift = Math.min(window.scrollY, 800) * 0.004
@@ -252,6 +291,7 @@ export function createHeroScene(container: HTMLElement, onReady: () => void): ()
   return () => {
     cancelAnimationFrame(readyFrame)
     cancelAnimationFrame(frame)
+    window.clearTimeout(settleTimer)
     window.removeEventListener('pointermove', onPointerMove)
     document.documentElement.removeEventListener('pointerleave', onPointerLeave)
     document.removeEventListener('visibilitychange', onVisibility)

@@ -3,6 +3,7 @@ import { ArrowRight, MapPin } from 'lucide-vue-next'
 import { motion, useReducedMotion } from 'motion-v'
 import MagneticHover from '@/components/motion/MagneticHover.vue'
 import HeroScene from '@/components/three/HeroScene.vue'
+import HeroPortrait from '@/components/sections/HeroPortrait.vue'
 import ButtonLink from '@/components/ui/ButtonLink.vue'
 import ResumeButton from '@/components/ui/ResumeButton.vue'
 import { site } from '@/data/site'
@@ -25,8 +26,9 @@ const nameWords = site.name.split(' ')
     <HeroScene />
 
     <div
-      class="mx-auto flex min-h-[min(88dvh,52rem)] max-w-6xl flex-col justify-center px-4 py-20 sm:px-6 sm:py-28 lg:px-8"
+      class="mx-auto grid min-h-[min(88dvh,52rem)] max-w-6xl items-center gap-y-8 px-4 pt-10 pb-20 sm:px-6 sm:pt-14 sm:pb-28 lg:grid-cols-[1.15fr_0.85fr] lg:gap-x-10 lg:px-8 lg:py-28"
     >
+      <div class="flex flex-col justify-center">
       <motion.p v-bind="enter(0)" class="flex items-center gap-2 text-sm text-muted">
         <MapPin class="size-4 text-subtle" aria-hidden="true" />
         {{ site.location }}
@@ -82,6 +84,10 @@ const nameWords = site.name.split(' ')
         </MagneticHover>
         <ResumeButton variant="ghost" />
       </motion.div>
+      </div>
+
+      <!-- Shown above the text on small screens (order-first); the DOM keeps the text first for reading order. -->
+      <HeroPortrait class="max-lg:order-first lg:-mb-28 lg:self-end" />
     </div>
   </section>
 </template>

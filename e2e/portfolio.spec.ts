@@ -285,6 +285,52 @@ test.describe('portfolio', () => {
     await expect(page.locator('[data-hero-scene] canvas')).toHaveCount(0)
   })
 
+  test('hero portrait loads, stays light and does not cover the text or buttons', async ({ page }) => {
+    const responses: { type: string; size: number }[] = []
+    page.on('response', async (res) => {
+      if (/\/assets\/yosef-\d+-.*\.webp$/.test(new URL(res.url()).pathname)) {
+        responses.push({ type: res.headers()['content-type'] ?? '', size: (await res.body()).length })
+      }
+    })
+    await page.goto('/')
+    const img = page.locator('[data-hero-figure] img')
+    await expect(img).toHaveAttribute('alt', 'Yosef Pumares')
+    await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth)).toBeGreaterThan(0)
+    expect(responses.length).toBeGreaterThan(0)
+    for (const r of responses) {
+      expect(r.type).toContain('image/webp')
+      expect(r.size).toBeLessThan(150 * 1024)
+    }
+
+    // No overlap with the heading or the call-to-action buttons (any layout).
+    await page.waitForTimeout(1500) // entrance animation
+    const figure = (await page.locator('[data-hero-figure]').boundingBox())!
+    for (const target of [h1(page), page.getByRole('link', { name: 'Explore My Projects' })]) {
+      const box = (await target.boundingBox())!
+      const overlaps =
+        figure.x < box.x + box.width &&
+        box.x < figure.x + figure.width &&
+        figure.y < box.y + box.height &&
+        box.y < figure.y + figure.height
+      expect(overlaps).toBe(false)
+    }
+  })
+
+  test('hero portrait tilts toward the mouse and settles back', async ({ page }) => {
+    test.skip(isMobile(page), 'mouse-only interaction')
+    await page.goto('/')
+    const tilt = page.locator('[data-hero-figure] img').locator('xpath=../..')
+    await page.waitForTimeout(1500)
+    const rest = await tilt.evaluate((el) => getComputedStyle(el).transform)
+    const size = page.viewportSize()!
+    await page.mouse.move(size.width - 20, 120, { steps: 8 })
+    await expect.poll(() => tilt.evaluate((el) => getComputedStyle(el).transform)).not.toBe(rest)
+    // Leaving the page (pointer moves below the hero) springs it back to rest.
+    await page.mouse.move(size.width / 2, size.height + 400)
+    await page.evaluate(() => document.documentElement.dispatchEvent(new PointerEvent('pointerleave')))
+    await expect.poll(() => tilt.evaluate((el) => getComputedStyle(el).transform), { timeout: 5000 }).toBe(rest)
+  })
+
   test('resizing during a page transition keeps the layout intact', async ({ page }) => {
     await page.goto('/')
     const size = page.viewportSize()!
@@ -310,6 +356,14 @@ test.describe('reduced motion', () => {
     await page.waitForTimeout(1500)
     await expect(page.locator('[data-hero-scene] canvas')).toHaveCount(0)
     await expect(page.locator('[data-hero-scene]')).toHaveAttribute('data-ready', 'false')
+    // The portrait is shown still: fully opaque and without tilt or float transforms.
+    const portrait = page.locator('[data-hero-figure]')
+    await expect(portrait.locator('img')).toBeVisible()
+    expect(await portrait.evaluate((el) => getComputedStyle(el).opacity)).toBe('1')
+    const transforms = await portrait.evaluate((el) =>
+      [el, ...el.querySelectorAll('*')].map((n) => getComputedStyle(n).transform),
+    )
+    expect(transforms.every((t) => t === 'none')).toBe(true)
     const behavior = await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior)
     expect(behavior).toBe('auto')
   })
