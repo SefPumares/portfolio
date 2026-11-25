@@ -66,7 +66,9 @@ To use a PDF made elsewhere instead:
 > The PDF is public to anyone visiting the site. Check that it only contains details you're happy to publish.
 
 ## Replacing the hero portrait
-The portrait lives in [`src/assets/portrait/`](src/assets/portrait) and is shown by [`HeroPortrait.vue`](src/components/sections/HeroPortrait.vue).
+The portrait lives in [`src/assets/portrait/`](src/assets/portrait) and is shown by [`HeroPortrait.vue`](src/components/sections/HeroPortrait.vue). It stays hidden until the visitor interacts with the name in the hero. That reveal logic lives in [`HeroSection.vue`](src/components/sections/HeroSection.vue):
+- **1024 px and wider, with a mouse:** hovering the name shows it.
+- **Narrower windows and touch screens:** clicking or tapping the name shows it.
 
 To replace it:
 1. Export a transparent cutout cropped from the top of the head to about the waist, with no empty margins.

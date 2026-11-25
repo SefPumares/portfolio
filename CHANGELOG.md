@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.4.0 — 2026-11-25
+
+### Changed
+- The hero portrait is hidden until a visitor interacts with the name:
+  - **Wide screens with a mouse:** hovering "Yosef Pumares" makes the photo rise into the particle field, and the field ripples around it. It stays while you hover the name or the photo, and hides shortly after you leave both.
+  - **Touch screens and narrower windows:** tap or click the name to show or hide the photo above it. A small "Tap my name" / "Click my name" hint shows until the first use. Tapping elsewhere or pressing Escape closes it.
+- The name turns light cyan while the photo is shown.
+- The photo is now decorative for screen readers, since the name is already the page heading.
+
 ## 2.3.0 — 2026-11-25
 
 ### Added
