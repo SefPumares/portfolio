@@ -285,7 +285,7 @@ test.describe('portfolio', () => {
     await expect(page.locator('[data-hero-scene] canvas')).toHaveCount(0)
   })
 
-  test('hero portrait loads, stays light and does not cover the text or buttons', async ({ page }) => {
+  test('hero portrait is preloaded but hidden until the name is used', async ({ page }) => {
     const responses: { type: string; size: number }[] = []
     page.on('response', async (res) => {
       if (/\/assets\/yosef-\d+-.*\.webp$/.test(new URL(res.url()).pathname)) {
@@ -293,42 +293,92 @@ test.describe('portfolio', () => {
       }
     })
     await page.goto('/')
-    const img = page.locator('[data-hero-figure] img')
-    await expect(img).toHaveAttribute('alt', 'Yosef Pumares')
+    const figure = page.locator('[data-hero-figure]')
+    const img = figure.locator('img')
+    await expect(img).toHaveAttribute('alt', '')
+    await expect(figure).toHaveAttribute('aria-hidden', 'true')
+    // Loaded up front, so it appears instantly on hover; small WebP files.
     await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth)).toBeGreaterThan(0)
     expect(responses.length).toBeGreaterThan(0)
     for (const r of responses) {
       expect(r.type).toContain('image/webp')
       expect(r.size).toBeLessThan(150 * 1024)
     }
-
-    // No overlap with the heading or the call-to-action buttons (any layout).
-    await page.waitForTimeout(1500) // entrance animation
-    const figure = (await page.locator('[data-hero-figure]').boundingBox())!
-    for (const target of [h1(page), page.getByRole('link', { name: 'Explore My Projects' })]) {
-      const box = (await target.boundingBox())!
-      const overlaps =
-        figure.x < box.x + box.width &&
-        box.x < figure.x + figure.width &&
-        figure.y < box.y + box.height &&
-        box.y < figure.y + figure.height
-      expect(overlaps).toBe(false)
-    }
+    await page.waitForTimeout(1500)
+    await expect(figure).toHaveAttribute('data-revealed', 'false')
+    expect(await figure.evaluate((el) => getComputedStyle(el).opacity)).toBe('0')
   })
 
-  test('hero portrait tilts toward the mouse and settles back', async ({ page }) => {
-    test.skip(isMobile(page), 'mouse-only interaction')
+  test('hovering the name reveals the portrait; it stays while hovered and hides after leaving', async ({ page }) => {
+    test.skip(page.viewportSize()!.width < 1024, 'hover reveal is for wide layouts; narrower ones click or tap')
     await page.goto('/')
-    const tilt = page.locator('[data-hero-figure] img').locator('xpath=../..')
+    const figure = page.locator('[data-hero-figure]')
+    const tilt = figure.locator('img').locator('xpath=../..')
     await page.waitForTimeout(1500)
     const rest = await tilt.evaluate((el) => getComputedStyle(el).transform)
-    const size = page.viewportSize()!
-    await page.mouse.move(size.width - 20, 120, { steps: 8 })
-    await expect.poll(() => tilt.evaluate((el) => getComputedStyle(el).transform)).not.toBe(rest)
-    // Leaving the page (pointer moves below the hero) springs it back to rest.
-    await page.mouse.move(size.width / 2, size.height + 400)
-    await page.evaluate(() => document.documentElement.dispatchEvent(new PointerEvent('pointerleave')))
+    await expect(page.locator('[data-name-hint]')).toBeHidden() // no hint where hover works
+
+    await page.locator('[data-hero-name]').hover()
+    await expect(figure).toHaveAttribute('data-revealed', 'true')
+    await expect.poll(() => figure.evaluate((el) => getComputedStyle(el).opacity)).toBe('1')
+    const atName = await tilt.evaluate((el) => getComputedStyle(el).transform)
+
+    // Move onto the portrait (within the hide delay): it stays open and tilts toward the pointer.
+    const box = (await figure.boundingBox())!
+    await page.mouse.move(box.x + box.width * 0.8, box.y + box.height * 0.25, { steps: 4 })
+    await page.waitForTimeout(800)
+    await expect(figure).toHaveAttribute('data-revealed', 'true')
+    await expect.poll(() => tilt.evaluate((el) => getComputedStyle(el).transform)).not.toBe(atName)
+
+    // It does not cover the heading or the call-to-action buttons.
+    const shown = (await figure.boundingBox())!
+    for (const target of [h1(page), page.getByRole('link', { name: 'Explore My Projects' })]) {
+      const t = (await target.boundingBox())!
+      const overlaps =
+        shown.x < t.x + t.width && t.x < shown.x + shown.width && shown.y < t.y + t.height && t.y < shown.y + shown.height
+      expect(overlaps).toBe(false)
+    }
+
+    // Leave both: it hides and springs back to rest.
+    await page.mouse.move(40, page.viewportSize()!.height - 40, { steps: 4 })
+    await expect(figure).toHaveAttribute('data-revealed', 'false', { timeout: 2000 })
+    await expect.poll(() => figure.evaluate((el) => getComputedStyle(el).opacity)).toBe('0')
     await expect.poll(() => tilt.evaluate((el) => getComputedStyle(el).transform), { timeout: 5000 }).toBe(rest)
+
+    // Escape closes it immediately.
+    await page.locator('[data-hero-name]').hover()
+    await expect(figure).toHaveAttribute('data-revealed', 'true')
+    await page.keyboard.press('Escape')
+    await expect(figure).toHaveAttribute('data-revealed', 'false')
+  })
+
+  test('below the wide layout, clicking the name toggles the portrait above it', async ({ page }) => {
+    test.skip(page.viewportSize()!.width >= 1024, 'narrow layouts only')
+    await page.goto('/')
+    const figure = page.locator('[data-hero-figure]')
+    const hint = page.locator('[data-name-hint]')
+    await expect(hint).toBeVisible()
+    await page.waitForTimeout(1200)
+    const nameBefore = (await h1(page).boundingBox())!.y
+
+    await page.locator('[data-hero-name]').click()
+    await expect(figure).toHaveAttribute('data-revealed', 'true')
+    await expect(hint).toHaveCount(0)
+    await expect.poll(async () => (await figure.boundingBox())!.height, { timeout: 3000 }).toBeGreaterThan(200)
+    // The name moved down to make room (by less than the full height where the hero content is
+    // vertically centred), and the portrait sits entirely above it.
+    expect((await h1(page).boundingBox())!.y).toBeGreaterThan(nameBefore + 40)
+    const shown = (await figure.boundingBox())!
+    const heading = (await h1(page).boundingBox())!
+    expect(shown.y + shown.height).toBeLessThanOrEqual(heading.y + 1)
+
+    // Moving the mouse away does not close it here (no hover behaviour below lg); clicking again does.
+    await page.mouse.move(5, 5)
+    await page.waitForTimeout(700)
+    await expect(figure).toHaveAttribute('data-revealed', 'true')
+    await page.locator('[data-hero-name]').click()
+    await expect(figure).toHaveAttribute('data-revealed', 'false')
+    await expect.poll(async () => (await figure.boundingBox())!.height, { timeout: 3000 }).toBeLessThan(1)
   })
 
   test('resizing during a page transition keeps the layout intact', async ({ page }) => {
@@ -356,16 +406,52 @@ test.describe('reduced motion', () => {
     await page.waitForTimeout(1500)
     await expect(page.locator('[data-hero-scene] canvas')).toHaveCount(0)
     await expect(page.locator('[data-hero-scene]')).toHaveAttribute('data-ready', 'false')
-    // The portrait is shown still: fully opaque and without tilt or float transforms.
+    const behavior = await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior)
+    expect(behavior).toBe('auto')
+
+    // The portrait still reveals (clicking the name works on every layout), as a plain fade:
+    // fully opaque once shown, with no tilt, rise or float transforms on any layer.
     const portrait = page.locator('[data-hero-figure]')
-    await expect(portrait.locator('img')).toBeVisible()
-    expect(await portrait.evaluate((el) => getComputedStyle(el).opacity)).toBe('1')
+    await page.locator('[data-hero-name]').click()
+    await expect(portrait).toHaveAttribute('data-revealed', 'true')
+    await expect.poll(() => portrait.evaluate((el) => getComputedStyle(el).opacity)).toBe('1')
     const transforms = await portrait.evaluate((el) =>
       [el, ...el.querySelectorAll('*')].map((n) => getComputedStyle(n).transform),
     )
     expect(transforms.every((t) => t === 'none')).toBe(true)
-    const behavior = await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior)
-    expect(behavior).toBe('auto')
+  })
+})
+
+test.describe('touch phone', () => {
+  test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })
+
+  test('tapping the name toggles the portrait; a tap elsewhere or Escape closes it', async ({ page }, info) => {
+    test.skip(info.project.name !== 'mobile', 'one touch-phone run is enough')
+    await page.goto('/')
+    const figure = page.locator('[data-hero-figure]')
+    const name = page.locator('[data-hero-name]')
+    const hint = page.locator('[data-name-hint]')
+    await expect(hint).toBeVisible()
+    await expect(hint).toHaveText(/Tap my name/)
+    await page.waitForTimeout(1200)
+
+    await name.tap()
+    await expect(figure).toHaveAttribute('data-revealed', 'true')
+    await expect(hint).toHaveCount(0)
+    await expect.poll(async () => (await figure.boundingBox())!.height, { timeout: 3000 }).toBeGreaterThan(200)
+
+    await name.tap() // tap again: hides
+    await expect(figure).toHaveAttribute('data-revealed', 'false')
+
+    await name.tap()
+    await expect(figure).toHaveAttribute('data-revealed', 'true')
+    await page.getByText(/I build practical software/).tap() // tap elsewhere: hides
+    await expect(figure).toHaveAttribute('data-revealed', 'false')
+
+    await name.tap()
+    await expect(figure).toHaveAttribute('data-revealed', 'true')
+    await page.keyboard.press('Escape')
+    await expect(figure).toHaveAttribute('data-revealed', 'false')
   })
 })
 

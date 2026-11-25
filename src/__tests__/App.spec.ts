@@ -100,15 +100,25 @@ describe('App', () => {
     wrapper.unmount()
   })
 
-  it('shows the portrait in the home hero with responsive sources and fixed dimensions', async () => {
+  it('keeps the decorative hero portrait hidden until the name is tapped, and Escape closes it', async () => {
     const { wrapper } = await mountApp('/')
-    const img = wrapper.find('[data-hero-figure] img')
-    expect(img.exists()).toBe(true)
-    expect(img.attributes('alt')).toBe('Yosef Pumares')
+    const figure = () => wrapper.find('[data-hero-figure]')
+    const img = figure().find('img')
+    expect(figure().attributes('aria-hidden')).toBe('true')
+    expect(img.attributes('alt')).toBe('')
     expect(img.attributes('width')).toBe('500')
     expect(img.attributes('height')).toBe('822')
     expect(img.attributes('srcset')?.split(',')).toHaveLength(2)
-    // It is not part of the page heading's accessible name.
+    expect(figure().attributes('data-revealed')).toBe('false')
+
+    await wrapper.find('[data-hero-name]').trigger('click')
+    expect(figure().attributes('data-revealed')).toBe('true')
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await flushPromises()
+    expect(figure().attributes('data-revealed')).toBe('false')
+
+    // The heading's accessible name is unchanged.
+    expect(wrapper.find('h1 .sr-only').text()).toBe('Yosef Pumares')
     expect(wrapper.find('h1 img').exists()).toBe(false)
     wrapper.unmount()
   })

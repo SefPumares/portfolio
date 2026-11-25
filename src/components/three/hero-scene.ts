@@ -274,7 +274,9 @@ export function createHeroScene(
 
     uniforms.uPointerStrength.value += ((pointerActive ? 1 : 0) - uniforms.uPointerStrength.value) * 0.05
     if (pointerActive) uniforms.uPointer.value.lerp(pointerTarget, 0.08)
-    uniforms.uFigureStrength.value += ((figureActive ? 1 : 0) - uniforms.uFigureStrength.value) * 0.03
+    // Rings swell in while the portrait is revealed (an attribute read: no layout work).
+    const figureShown = figureActive && figure?.dataset.revealed === 'true'
+    uniforms.uFigureStrength.value += ((figureShown ? 1 : 0) - uniforms.uFigureStrength.value) * 0.04
 
     // Gentle camera tilt toward the pointer plus drift with scroll.
     const scrollShift = Math.min(window.scrollY, 800) * 0.004

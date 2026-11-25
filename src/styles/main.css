@@ -135,6 +135,32 @@
   }
 }
 
+/*
+ * The hero name reveals the portrait: it shifts to light cyan while hovered or while the portrait
+ * is open. (Not a text-shadow: each word sits in an overflow-hidden wrapper for its entrance
+ * animation, which would clip a glow into visible boxes.)
+ */
+.hero-name {
+  transition: color 300ms ease;
+}
+.hero-name.is-active {
+  color: var(--color-accent-strong);
+}
+@media (hover: hover) {
+  .hero-name:hover {
+    color: var(--color-accent-strong);
+  }
+}
+/* "Tap/Click my name" is shown where hovering does not reveal: touch screens, and below lg. */
+.name-hint {
+  display: none;
+}
+@media (hover: none), (max-width: 1023.98px) {
+  .name-hint {
+    display: flex;
+  }
+}
+
 /* Light behind the figure; it drifts toward the pointer (see HeroPortrait.vue). */
 .portrait-glow {
   inset: 8% -18% 12%;
