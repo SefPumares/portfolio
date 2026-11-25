@@ -65,6 +65,16 @@ To use a PDF made elsewhere instead:
 
 > The PDF is public to anyone visiting the site. Check that it only contains details you're happy to publish.
 
+## Replacing the hero portrait
+The portrait lives in [`src/assets/portrait/`](src/assets/portrait) and is shown by [`HeroPortrait.vue`](src/components/sections/HeroPortrait.vue).
+
+To replace it:
+1. Export a transparent cutout cropped from the top of the head to about the waist, with no empty margins.
+2. Save it as WebP at two widths: `yosef-320.webp` and `yosef-500.webp`. The larger one can be up to about 640 px wide.
+3. Update `width`/`height` in `HeroPortrait.vue` to the large file's real size, so the page doesn't jump while it loads.
+4. Keep each file under 150 KB; an E2E test enforces this.
+5. Strip metadata (EXIF/GPS) before committing. Most export tools do this; `sharp` does by default.
+
 ## Adding or updating a project
 Add an object to the `projects` array in `src/data/projects.ts`. The `Project` type in [`src/types/content.ts`](src/types/content.ts) documents each field.
 

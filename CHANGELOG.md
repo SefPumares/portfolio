@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.3.0 — 2026-11-25
+
+### Added
+- An interactive portrait in the home hero. The background was removed locally and nothing was uploaded; the images are WebP files of 20 KB and 32 KB with no metadata.
+  - **Mouse:** it tilts toward the pointer, and a cyan glow behind it drifts after the pointer.
+  - **Touch screens:** it floats slowly.
+  - **Reduced motion:** it stays still.
+  - **On wide screens**, the 3D particle field sends slow rings out from under the figure.
+  - **Below 1024 px**, it sits above the name in a frame that fades out at the bottom.
+
 ## 2.2.0 — 2026-11-25
 
 ### Added
