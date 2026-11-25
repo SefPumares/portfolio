@@ -53,6 +53,12 @@ npm run test:e2e     # Playwright on Edge at 360px, 768px and 1440px widths; bui
 - **Screenshots:** the E2E run saves them to `test-results/screens/`. Open the HTML report with `npx playwright show-report`.
 
 ## Adding the resume
+The resume is generated from [`resume/resume.html`](resume/resume.html). Edit that file, then run `npm run resume` to rewrite `public/resume.pdf`.
+- The command uses Edge, or Chromium with `PW_CHANNEL=chromium`.
+- It warns if the resume runs past one page.
+- Commit both files.
+
+To use a PDF made elsewhere instead:
 1. Save your resume as **`public/resume.pdf`**. The exact name matters; to use another, change `resumePath` in `site.ts`.
 2. Restart `npm run dev`, or rebuild. The file is detected at startup or build time in `vite.config.ts`.
 3. "Resume" download buttons appear in the header, the hero, the mobile menu and the Contact section. Without the file, no button is rendered, so there's never a broken link.

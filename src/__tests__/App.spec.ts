@@ -66,7 +66,7 @@ describe('App', () => {
     const { wrapper } = await mountApp('/projects/xepto-grader-tool')
     expect(wrapper.find('nav[aria-label="Primary"] a[aria-current="page"]').text()).toBe('Projects')
     expect(wrapper.find('h1').text()).toBe('Xepto Grader Tool')
-    expect(wrapper.text()).toContain('reported observation, not a controlled benchmark')
+    expect(wrapper.text()).toContain('not a controlled benchmark')
     wrapper.unmount()
   })
 

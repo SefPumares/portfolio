@@ -1,0 +1,238 @@
+<!doctype html>
+<!--
+  Resume source. Edit this file, then run `npm run resume` to regenerate public/resume.pdf.
+  Kept as plain HTML with selectable text so applicant tracking systems (ATS) can read the PDF.
+  Everything here is PUBLIC once deployed: no phone number, street address or work email.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Ryan Yosef Pumares — Resume</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 11mm 14mm;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+        font-size: 9.4pt;
+        line-height: 1.32;
+        color: #1f2933;
+      }
+      h1 {
+        margin: 0;
+        font-size: 22pt;
+        line-height: 1.1;
+        color: #12324d;
+        letter-spacing: -0.01em;
+      }
+      .headline {
+        margin: 2pt 0 4pt;
+        font-size: 10.5pt;
+        color: #1b7a9e;
+        font-weight: 600;
+      }
+      .contact {
+        font-size: 8.8pt;
+        color: #3e4c59;
+      }
+      .contact span + span::before {
+        content: ' | ';
+        color: #9aa5b1;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      h2 {
+        margin: 8pt 0 3pt;
+        padding-bottom: 2pt;
+        border-bottom: 1.2pt solid #1b7a9e;
+        font-size: 9.6pt;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #12324d;
+      }
+      p {
+        margin: 0;
+      }
+      .skills {
+        display: grid;
+        grid-template-columns: 34mm 1fr;
+        gap: 1.5pt 8pt;
+      }
+      .skills dt {
+        font-weight: 600;
+        color: #12324d;
+      }
+      .skills dd {
+        margin: 0;
+      }
+      .role {
+        margin-top: 4.5pt;
+        break-inside: avoid;
+      }
+      .role-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 8pt;
+      }
+      .role-title {
+        font-weight: 700;
+        color: #12324d;
+      }
+      .dates {
+        color: #52606d;
+        white-space: nowrap;
+      }
+      .org {
+        color: #1b7a9e;
+      }
+      ul {
+        margin: 2pt 0 0;
+        padding-left: 12pt;
+      }
+      li {
+        margin: 1.5pt 0;
+      }
+      li::marker {
+        color: #1b7a9e;
+      }
+      strong {
+        color: #12324d;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Ryan Yosef Pumares</h1>
+      <p class="headline">Junior Software Developer · Moodle Plugins · Vue.js · Quality Assurance</p>
+      <p class="contact">
+        <span>San Pedro, Laguna, Philippines</span>
+        <span><a href="mailto:yosef.pumares22@gmail.com">yosef.pumares22@gmail.com</a></span>
+        <span><a href="https://portfolio-iota-bay-71.vercel.app">portfolio-iota-bay-71.vercel.app</a></span>
+      </p>
+      <p class="contact">
+        <span><a href="https://www.linkedin.com/in/ryan-yosef-pumares-a09a1a354">linkedin.com/in/ryan-yosef-pumares-a09a1a354</a></span>
+        <span><a href="https://github.com/SefPumares">github.com/SefPumares</a></span>
+      </p>
+    </header>
+
+    <h2>Summary</h2>
+    <p>
+      Junior Software Developer in education technology who builds Moodle plugins, an offline exam-checking
+      app, and MySQL/Metabase reporting dashboards. Started in quality assurance, which shaped a testing-first
+      approach to reliability and usability. A background in graphic design adds an eye for clear, consistent
+      interfaces.
+    </p>
+
+    <h2>Technical Skills</h2>
+    <dl class="skills">
+      <dt>Languages</dt>
+      <dd>JavaScript, TypeScript, PHP, Python, SQL, HTML, CSS</dd>
+      <dt>Frameworks</dt>
+      <dd>Vue.js, Ionic, Capacitor, Node.js, Express.js</dd>
+      <dt>Platforms</dt>
+      <dd>Moodle / XLMS (plugin development), WordPress, Linux and server environments, Unity</dd>
+      <dt>Data &amp; versioning</dt>
+      <dd>MySQL, Metabase, SQL reporting, dashboards, Git, GitHub</dd>
+      <dt>Quality assurance</dt>
+      <dd>Manual and regression testing, test case design, bug reporting, cross-browser and cross-device testing</dd>
+
+    </dl>
+
+    <h2>Professional Experience</h2>
+    <div class="role">
+      <div class="role-head">
+        <span class="role-title">Junior Software Developer</span><span class="dates">Oct 2024 – Present</span>
+      </div>
+      <div class="org">Xepto Computing Inc. / Xepto Digital Education</div>
+      <ul>
+        <li>
+          <strong>Created Xepto Health Checker</strong>, a Moodle plugin that checks course setup for errors before
+          the automated gradebook export, so problems are fixed before they reach exported grades.
+        </li>
+        <li>
+          <strong>Created Xepto Module Repository</strong>, a Moodle plugin (similar to an LTI external tool) that
+          lets teachers add pre-built, validated activities aligned with their budget of work instead of building
+          each one from scratch.
+        </li>
+        <li>
+          Helped develop the <strong>Xepto Grader Tool</strong>, an offline exam-checking app (Vue.js, TypeScript,
+          Capacitor, Python OMR) for schools with limited connectivity: proof of concept, implementation and
+          testing. Checking a 50-item exam dropped from about 59 s to about 30 s.
+        </li>
+        <li>
+          Wrote MySQL queries and built Metabase dashboards for <strong>Xepto Metabase</strong>, a data reporting
+          initiative.
+        </li>
+        <li>
+          Maintain and support <strong>Xepto Biblio</strong>, a WordPress book-ordering platform used by students at
+          Ateneo de Manila University, De La Salle University, San Beda University and the University of Santo
+          Tomas.
+        </li>
+      </ul>
+    </div>
+    <div class="role">
+      <div class="role-head">
+        <span class="role-title">Quality Assurance Intern (OJT)</span><span class="dates">Mar 2024 – Oct 2024</span>
+      </div>
+      <div class="org">Xepto Computing Inc. / Xepto Digital Education</div>
+      <ul>
+        <li>Performed manual and regression testing across devices, browsers and environments.</li>
+        <li>
+          Prepared and executed test cases; documented defects and worked with developers to resolve them. Offered a
+          developer role at the end of the internship.
+        </li>
+      </ul>
+    </div>
+    <div class="role">
+      <div class="role-head">
+        <span class="role-title">Graphic Artist</span><span class="dates">Oct 2019 – Mar 2020</span>
+      </div>
+      <div class="org">Stickerista2Autosign</div>
+      <ul>
+        <li>Produced graphic design work before moving into information technology.</li>
+      </ul>
+    </div>
+
+    <h2>Projects &amp; Recognition</h2>
+    <ul>
+      <li>
+        <strong>Best in Capstone, 2024</strong> — “MS 17 Reclaimed Valor: A Virtual Reality Experience of the Marawi
+        Siege” (Unity, C#), PUP Biñan Campus. In a team of six, created terrains and landscapes, modeled characters
+        and recorded voiceovers.
+      </li>
+      <li>
+        <strong>Xepto Grader Tool — team recognition, Dec 2024.</strong> Member of the development team recognized
+        for the offline exam-checking tool.
+      </li>
+    </ul>
+
+    <h2>Leadership</h2>
+    <div class="role">
+      <div class="role-head">
+        <span class="role-title">IBITS — PUP Biñan Campus</span><span class="dates">2021 – 2024</span>
+      </div>
+      <div class="org">President, 2023–2024 · Creatives Specialist, 2021–2023</div>
+      <ul>
+        <li>
+          Led the IT student organization with fellow officers after two years of creative work; helped organize
+          IBITS Week and other student activities.
+        </li>
+      </ul>
+    </div>
+
+    <h2>Education</h2>
+    <div class="role">
+      <div class="role-head">
+        <span class="role-title">Bachelor of Science in Information Technology</span><span class="dates">2024</span>
+      </div>
+      <div class="org">Polytechnic University of the Philippines — Biñan Campus · Best in Capstone</div>
+    </div>
+  </body>
+</html>

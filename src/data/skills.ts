@@ -37,6 +37,6 @@ export const skillGroups: SkillGroup[] = [
     id: 'tools',
     title: 'Tools & environments',
     icon: 'tools',
-    items: ['Git', 'GitHub', 'Linux', 'Server environments', 'Moodle / XLMS plugin development', 'Unity'],
+    items: ['Git', 'GitHub', 'Linux', 'Server environments', 'Moodle / XLMS plugin development', 'WordPress', 'Unity'],
   },
 ]

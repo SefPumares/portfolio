@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.2.0 — 2026-11-25
+
+### Added
+- A one-page resume generated from `resume/resume.html` with `npm run resume` and saved as `public/resume.pdf`. The "Resume" download buttons now appear across the site.
+- `canonicalUrl` is set to the production URL, so the site now has `<link rel="canonical">` and `og:url` tags.
+
+### Changed
+- Biblio lists WordPress. The Grader Tool speed-up is confirmed and no longer described as only "reported".
+
 ## 2.1.0 — 2026-11-25
 
 ### Added

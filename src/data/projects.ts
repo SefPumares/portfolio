@@ -30,14 +30,14 @@ export const projects: Project[] = [
       {
         label: 'Reported speed-up',
         detail:
-          'A 50-item exam-checking run was reported to drop from about 59 seconds to about 30 seconds. This is a reported observation, not a controlled benchmark.',
+          'Checking a 50-item exam dropped from about 59 seconds to about 30 seconds, and the team can now go faster than that. These are observed times, not a controlled benchmark.',
       },
     ],
     technologies: ['Vue.js', 'TypeScript', 'Capacitor', 'Python'],
     recognition: 'Team recognition, December 2024',
     editorNotes: [
-      'Confirm the source of the 59s → 30s speed-up figure; remove it if you cannot back it up in an interview.',
-      'A "14 devices tested" highlight was removed in v2.0.0 because it could not be confirmed.',
+      'Speed-up confirmed by Yosef (Nov 2026). Replace "faster than that" with a measured figure if you have one.',
+      'A "14 devices tested" highlight was removed in v2.1.0 because it could not be confirmed.',
     ],
   },
   {
@@ -96,8 +96,9 @@ export const projects: Project[] = [
       'Maintain and support the platform as part of the development team.',
       'Investigate issues and test functionality.',
     ],
+    technologies: ['WordPress'],
     editorNotes: [
-      'Add confirmed `technologies`.',
+      'Add other confirmed technologies (e.g. PHP, WooCommerce, MySQL) if you worked with them directly.',
       'Add specific technical challenges you handled (keep them non-confidential).',
     ],
   },

@@ -31,8 +31,8 @@ export const site: SiteConfig = {
     other: [],
   },
 
-  // Set after deployment, e.g. 'https://your-project.vercel.app' or your custom domain.
-  canonicalUrl: '',
+  // The production URL (Vercel). Change it if you add a custom domain.
+  canonicalUrl: 'https://portfolio-iota-bay-71.vercel.app',
 
   metaDescription:
     'Yosef Pumares is a Junior Software Developer in the Philippines working across development, quality assurance, and education technology.',

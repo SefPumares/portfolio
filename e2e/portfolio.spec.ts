@@ -196,7 +196,7 @@ test.describe('portfolio', () => {
     await expect(h1(page)).toHaveText('Xepto Grader Tool')
     await expect(page).toHaveTitle('Xepto Grader Tool · Yosef Pumares')
     const main = page.locator('#main')
-    await expect(main).toContainText('reported observation, not a controlled benchmark')
+    await expect(main).toContainText('not a controlled benchmark')
     await expect(main).toContainText('Capacitor')
 
     await page.getByRole('navigation', { name: 'More projects' }).getByRole('link', { name: /Next project/ }).click()
